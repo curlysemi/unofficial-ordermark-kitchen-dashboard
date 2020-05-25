@@ -252,7 +252,7 @@ $(document).click('.item-toggle', function (event) {
             var $mods = $(`#${id}-modifiers`);
             var itemsContainer = $(t.closest('.kd-items'));
             var ticket_id = itemsContainer.data('ticket-id');
-            var readyToComplete = $(`#${ticket_id}-ready-to-complete`);
+            // var readyToComplete = $(`#${ticket_id}-ready-to-complete`);
 
             toggleCompletedTicketItem(id, (isVisible) => {
                 if (isVisible) {
@@ -260,7 +260,7 @@ $(document).click('.item-toggle', function (event) {
                     $mods.collapse('show');
                     // All items haven't been completed if this item is visible
                     toggleCompletedTicketItems(ticket_id, false);
-                    readyToComplete.collapse('hide');
+                    // readyToComplete.collapse('hide');
                 }
                 else {
                     t.html(`<s>${name}</s>`);
@@ -268,7 +268,7 @@ $(document).click('.item-toggle', function (event) {
                     var items = itemsContainer.find('.item-toggle');
                     if (items.length === items.find('s').length) {
                         toggleCompletedTicketItems(ticket_id, true);
-                        readyToComplete.collapse('show');
+                        // readyToComplete.collapse('show');
                     }
                 }
             });
@@ -306,3 +306,10 @@ $('#clearLocalStorage').click(function () {
     });
 });
 
+$('#closeAllTickets').click(function () {
+    var l = loadedOrders
+    $('.complete-ticket').each(function(){
+        this.focus();
+        this.click();
+    });
+})

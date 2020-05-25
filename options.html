@@ -84,6 +84,15 @@
                                 </a>
                             </li>
                             <li>
+                                <a
+                                    class="text-white"
+                                    id="closeAllTickets"
+                                    href="#"
+                                    >
+                                    Close All Tickets
+                                </a>
+                            </li>
+                            <li>
                                 <a href="#" id="clearLocalStorage" class="text-white">
                                     Clear Local Storage
                                 </a>
@@ -280,9 +289,10 @@
                         <div
                             class="d-flex justify-content-between align-items-center"
                             >
+                            <!-- class="collapse ready-to-complete {{#areAllTicketItemsCompleted this.id}}show{{/areAllTicketItemsCompleted}}" -->
                             <div
                                 id="{{this.id}}-ready-to-complete"
-                                class="collapse ready-to-complete {{#areAllTicketItemsCompleted this.id}}show{{/areAllTicketItemsCompleted}}"
+                                class="ready-to-complete"
                                 data-id="{{this.id}}"
                                 >
                                 <button
