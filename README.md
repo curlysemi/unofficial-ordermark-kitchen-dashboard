@@ -21,3 +21,8 @@ After inspecting the Network tab, I found a request being made to `https://dashb
 * Once all items have been crossed off, the ticket can be closed.
 * Closed tickets can be restored by selecting the "hamburger menu," selecting 'Unclose Tickets,' and then selecting the desired tickets from the listing.
 * Because this Chrome extension uses local storage to keep track of completed items, minimized tickets, and completed tickets, there is also a 'Clear Local Storage' option under the hamburger menu.
+
+### Dev Notes
+* Uses Handlebars JS (patterned after an old official Google example — I didn't know much about Chrome Extensions, so I didn't want to fight a setup with better tooling.)
+  * Despite using the same pattern as Google's official example, `"content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"` had to be added to `manifest.json` to get Handlebars to work correctly.
+* The code itself is fairly janky, but it works; however, it could definitely be cleaned up and refactored (or rewritten entirely, as I don't really like it). ¯\_(ツ)_/¯
