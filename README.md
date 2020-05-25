@@ -5,10 +5,10 @@ Do you use Ordermark for your restaurant? Maybe this Chrome extension will work 
 ## Chrome Setup
 I've been testing in Chrome.
 
-Navigate to: chrome://extensions/
-Enable 'Developer mode'
-Select 'Load unpacked' and select the uncompressed `unofficial-ordermark-kitchen-dashboard` directory.
-Then, navigate to https://ordermark.com and sign in. (You'll need to do this when your session expires.)
+* Navigate to: chrome://extensions/
+* Enable 'Developer mode'
+* Select 'Load unpacked' and select the uncompressed `unofficial-ordermark-kitchen-dashboard` directory.
+* Then, navigate to https://ordermark.com and sign in. (You'll need to do this when your session expires.)
 
 ## How it Works
 After inspecting the Network tab, I found a request being made to `https://dashboard.ordermark.com/api/orderV2/dashboard?h=24&a=0,1,2`.
