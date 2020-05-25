@@ -1,0 +1,3 @@
+chrome.runtime.openOptionsPage(function () {
+});
+

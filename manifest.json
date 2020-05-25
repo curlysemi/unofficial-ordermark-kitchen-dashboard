@@ -1,0 +1,35 @@
+{
+  "name": "Unofficial Ordermark Kitchen Dash",
+  "description": "Poorly maintained kitchen dashboard",
+  "version": "1.0",
+
+  "permissions": [
+    "activeTab",
+    "storage",
+    "https://*.ordermark.com/"
+  ],
+
+  "options_page": "options.html",
+
+  "icons": {
+    "16": "img/icon16.png",
+    "48": "img/icon48.png",
+    "128": "img/icon128.png"
+  },
+
+  "browser_action": {
+    "default_icon": "img/icon.png",
+    "default_title": "UOKD",
+    "default_popup": "popup.html"
+  },
+
+  "web_accessible_resources": [
+    "js/*.js",
+    "renderer.html",
+    "renderer.js"
+  ],
+
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+
+  "manifest_version": 2
+}

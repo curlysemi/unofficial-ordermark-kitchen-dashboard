@@ -1,0 +1,320 @@
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <title>Unofficial Ordermark Kitchen Dash</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+
+        body {
+            background-color: #f8f9fa !important;
+        }
+
+        .no-highlight {
+            user-select: none;
+        }
+
+        .ticket-toggle:not(.collapsed) .indicator-open {
+            display: inherit;
+        }
+
+        .ticket-toggle.collapsed .indicator-open {
+            display: none;
+        }
+
+        .ticket-toggle:not(.collapsed) .indicator-closed {
+            display: none;
+        }
+
+        .ticket-toggle.collapsed .indicator-closed {
+            display: inherit;
+        }
+
+        .completed-item {
+            text-decoration: line-through;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="collapse bg-dark" id="navbarHeader">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-8 col-md-7 py-4">
+                        <h4 class="text-white">Info</h4>
+                        <p class="text-muted">
+                            Poorly maintained kitchen dashboard
+                        </p>
+                        <p class="text-muted">
+                            <small>
+                                Drunkenly made with 🍷 by {;
+                            </small>
+                        </p>
+                    </div>
+                    <div class="col-sm-4 offset-md-1 py-4">
+                        <h4 class="text-white">Options</h4>
+                        <ul class="list-unstyled">
+                            <li>
+                                <a
+                                    class="text-white"
+                                    data-toggle="collapse" href="#kd-completed-orders-container" role="button" aria-expanded="false" aria-controls="kd-completed-orders-container"
+                                    >
+                                    Unclose Tickets
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" id="clearLocalStorage" class="text-white">
+                                    Clear Local Storage
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row collapse" id="kd-completed-orders-container">
+                </div>
+            </div>
+        </div>
+        <div class="navbar navbar-dark bg-dark shadow-sm">
+            <div class="container d-flex justify-content-between">
+                <a href="#" class="navbar-brand d-flex align-items-center">
+                    <strong>Unofficial Ordermark Kitchen Dash</strong>
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarHeader"
+                    aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main role="main">
+        <div class="album py-5 bg-light">
+            <div class="text-center collapse show" id="loadingIndicator">
+                <div id="apiIssue" class="alert alert-warning alert-dismissible fade" role="alert">
+                    There may be an issue with the API.
+                </div>
+                <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row" id="kd-orders-container">
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <iframe id="rendererFrame" src="renderer.html" style="display: none;"></iframe>
+
+    <script id="kd-completed-order-template" type="text/x-handlebars-template">
+        {{#each orders}}
+            <div
+                class="col-md-4 collapse {{#isCompletedTicket this.id}}show{{/isCompletedTicket}}"
+                id="{{this.id}}-kd-completed-ticket"
+                >
+                <div class="card mb-4 text-white bg-secondary shadow-sm">
+                    <div class="card-header">
+                        #{{this.index}}
+                        <div class="float-right">
+                            <button class="btn btn-dark restore-ticket" id="{{this.id}}-restore" data-id="{{this.id}}">
+                                <svg class="bi bi-box-arrow-down" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M4.646 11.646a.5.5 0 0 1 .708 0L8 14.293l2.646-2.647a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 0-.708z"/>
+                                    <path fill-rule="evenodd" d="M8 4.5a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5z"/>
+                                    <path fill-rule="evenodd" d="M2.5 2A1.5 1.5 0 0 1 4 .5h8A1.5 1.5 0 0 1 13.5 2v7a1.5 1.5 0 0 1-1.5 1.5h-1.5a.5.5 0 0 1 0-1H12a.5.5 0 0 0 .5-.5V2a.5.5 0 0 0-.5-.5H4a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .5.5h1.5a.5.5 0 0 1 0 1H4A1.5 1.5 0 0 1 2.5 9V2z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <small>
+                            {{#if this.meta_info.provider_name}}
+                                {{this.meta_info.provider_name}}:
+                            {{/if}}
+                            {{this.customer.name}}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        {{/each}}
+    </script>
+
+    <script id="kd-order-template" type="text/x-handlebars-template">
+        {{#each orders}}
+            <div
+                class="col-md-4 collapse {{#isCompletedTicket this.id}}{{else}}show{{/isCompletedTicket}}"
+                id="{{this.id}}-kd-ticket"
+                >
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header">
+                        #{{this.index}}
+                        <div class="float-right">
+                            <button
+                                class="btn btn-light ticket-toggle {{#isMinimizedTicket this.id}}collapsed{{/isMinimizedTicket}}"
+                                type="button"
+                                data-id="{{this.id}}"
+                                data-toggle="collapse"
+                                data-target="#content-{{this.id}}"
+                                aria-expanded="true"
+                                aria-controls="content-{{this.id}}"
+                                >
+                                <svg class="indicator-open  bi bi-caret-down-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+                                </svg>
+                                <svg class="indicator-closed bi bi-caret-right-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12.14 8.753l-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
+                                  </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body collapse {{#isMinimizedTicket this.id}}{{else}}show{{/isMinimizedTicket}}" id="content-{{this.id}}">
+                        <h5>
+                            {{#if this.meta_info.provider_name}}
+                                {{this.meta_info.provider_name}}:
+                            {{/if}}
+                            {{this.customer.name}}
+                        </h3>
+                        <p class="card-text">
+                            <small class="text-secondary">
+                                Placed: {{this.order.placed_date_pretty}}
+                                <br>
+                                Due: {{this.order.requested_date_pretty}}
+                            </small>
+                        </p>
+                        <p class="card-text">
+                            <ul class="list-unstyled kd-items" data-ticket-id="{{this.id}}">
+                                {{#each this.menu_items as | item | }}
+                                    <li class="kd-item" style="margin-bottom:  0.5rem;">
+                                        {{#unlessEquals item.quantity 1}}
+                                            <strong>
+                                                {{item.quantity}}
+                                            </strong>
+                                        {{/unlessEquals}}
+                                        <a
+                                            id="{{item.id}}-toggle"
+                                            class="item-toggle no-highlight"
+                                            data-id="{{item.id}}"
+                                            data-name="{{item.item_name}}"
+                                            >
+                                            {{#isMinimizedTicketItem item.id}}
+                                                <s>
+                                                    {{item.item_name}}
+                                                </s>
+                                            {{else}}
+                                                {{item.item_name}}
+                                            {{/isMinimizedTicketItem}}
+                                        </a>
+                                        {{#if item.modifiers}}
+                                            <div class="collapse {{#isMinimizedTicketItem item.id}}{{else}}show{{/isMinimizedTicketItem}}" id="{{item.id}}-modifiers">
+                                                <small>
+                                                    <ul style="list-style-type: none;">
+                                                        {{#each item.modifiers}}
+                                                            {{#unlessEquals this.item_name 'Category'}}
+                                                                <li>
+                                                                    {{#if this.modifiers.0.quantity}}
+                                                                        {{#ifEquals this.modifiers.length 1}}
+                                                                            {{#unlessEquals this.modifiers.0.quantity 1}}
+                                                                                <strong>
+                                                                                    {{this.modifiers.0.quantity}}x
+                                                                                </strong>
+                                                                            {{/unlessEquals}}
+                                                                        {{/ifEquals}}
+                                                                    {{/if}}
+                                                                    {{removeChooseYour this.item_name}}:
+                                                                    <strong>
+                                                                        {{#ifEquals this.modifiers.length 1}}
+                                                                            {{this.modifiers.0.item_name}}
+                                                                        {{/ifEquals}}
+                                                                        {{#unlessEquals this.modifiers.length 1}}
+                                                                            <ul>
+                                                                                {{#each this.modifiers}}
+                                                                                    <li>
+                                                                                        {{#unlessEquals this.modifiers.0.quantity 1}}
+                                                                                            <strong>
+                                                                                                {{this.modifiers.0.quantity}}x
+                                                                                            </strong>
+                                                                                        {{/unlessEquals}}
+                                                                                        {{this.item_name}}
+                                                                                    </li>
+                                                                                {{/each}}
+                                                                            </ul>
+                                                                        {{/unlessEquals}}
+                                                                    </strong>
+                                                                </li>
+                                                            {{/unlessEquals}}
+                                                        {{/each}}
+                                                        {{#if this.special_instructions}}
+                                                            <li class="text-primary">
+                                                                <br>
+                                                                {{this.special_instructions}}
+                                                            </li>
+                                                        {{/if}}
+                                                    </ul>
+                                                </small>
+                                            </div>
+                                        {{/if}}
+                                    </li>
+                                {{/each}}
+                            </ul>
+                        </p>
+                        <div
+                            class="d-flex justify-content-between align-items-center"
+                            >
+                            <div
+                                id="{{this.id}}-ready-to-complete"
+                                class="collapse ready-to-complete {{#areAllTicketItemsCompleted this.id}}show{{/areAllTicketItemsCompleted}}"
+                                data-id="{{this.id}}"
+                                >
+                                <button
+                                    type="button"
+                                    class="btn btn-primary complete-ticket"
+                                    data-id="{{this.id}}"
+                                    >
+                                    Close Ticket
+                                </button>
+                            </div>
+                        </div>
+                        <div
+                            class="d-flex justify-content-between align-items-center"
+                            >
+                            <small class="text-muted">
+                                {{getMinutesSinceTime this.order.placed_date_original}}
+                                <br>
+                                {{getDueMinutes this.order.requested_date_original}}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{/each}}
+
+        </script>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="js/jquery-3.5.1.slim.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="options.js"></script>
+</body>
+</html>
