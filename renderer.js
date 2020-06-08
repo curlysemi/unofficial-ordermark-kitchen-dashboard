@@ -118,27 +118,38 @@ function formatMinutes(minutes) {
 }
 
 function makeLocalTime(datetime) {
-    if (datetime.charAt(datetime.length - 1) == 'Z') {
+    if (datetime && datetime.charAt(datetime.length - 1) == 'Z') {
         datetime = datetime.substr(0, datetime.length - 1);
     }
     return datetime;
 }
 
 Handlebars.registerHelper('getMinutesSinceTime', function (datetime, options) {
-    var diff = Math.abs(new Date() - new Date(makeLocalTime(datetime)));
-    var minutes = Math.floor((diff/1000)/60);
-
-    return `Placed ${formatMinutes(minutes)} ago`;
+    if (datetime) {
+        var diff = Math.abs(new Date() - new Date(makeLocalTime(datetime)));
+        var minutes = Math.floor((diff/1000)/60);
+        
+        return `Placed ${formatMinutes(minutes)} ago`;
+    }
+    else {
+        return '';
+    }
 });
 
 Handlebars.registerHelper('getDueMinutes', function (datetime, options) {
-    var diff = new Date(makeLocalTime(datetime)) - new Date();
-    var minutes = Math.floor((diff/1000)/60);
-    if (minutes < 0) {
-        return `Due ${formatMinutes(minutes * -1)} ago`;
+    if (datetime) {
+
+        var diff = new Date(makeLocalTime(datetime)) - new Date();
+        var minutes = Math.floor((diff/1000)/60);
+        if (minutes < 0) {
+            return `Due ${formatMinutes(minutes * -1)} ago`;
+        }
+        else {
+            return `Due in ${formatMinutes(minutes)}`;
+        }
     }
     else {
-        return `Due in ${formatMinutes(minutes)}`;
+        return '';
     }
 });
 
