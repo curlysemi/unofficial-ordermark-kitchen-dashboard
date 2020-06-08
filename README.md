@@ -22,6 +22,8 @@ After inspecting the Network tab, I found a request being made to `https://dashb
 * Closed tickets can be restored by selecting the "hamburger menu," selecting 'Unclose Tickets,' and then selecting the desired tickets from the listing.
 * All tickets can be closed under the self-explanatory action under the hamburger menu.
 * Because this Chrome extension uses local storage to keep track of completed items, minimized tickets, and completed tickets, there is also a 'Clear Local Storage' option under the hamburger menu.
+* Highlighting user-specified modifier selections with user-specified colors. Format as JSON.
+  * This uses a cookie to store the data instead of local storage, since local storage is used for all the toggles and has the option to 'Clear Local Storage' (which would lose the custom modifier colors if they were stored in local storage). 
 
 ### Dev Notes
 * Uses Handlebars JS (patterned after an old official Google example — I didn't know much about Chrome Extensions, so I didn't want to fight a setup with better tooling.)
