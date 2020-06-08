@@ -5,6 +5,22 @@ var minimizedTicketItems;
 var allTicketItemsCompleted;
 var isCompletedTicket;
 
+var customModifierColors;
+
+function loadCustomModifierColors(completedCallback) {
+    chrome.cookies.get({
+        url: 'https://uomkdd.ordermark.com/', name: 'settings'
+    }, (cookie) => {
+        try {
+            customModifierColors = JSON.parse(cookie.value);
+            completedCallback();
+        }
+        catch (error) {
+            // TODO
+        }
+    });
+} 
+
 function loadPageloadStorageItems(completedCallback) {
     storage.get('minimizedTicketItems', (items) => {
         minimizedTicketItems = items.minimizedTicketItems;
@@ -23,6 +39,15 @@ function loadPageloadStorageItems(completedCallback) {
 
 Handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
     return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+});
+
+Handlebars.registerHelper('hasValueGreaterThanOne', function(arg1, options) {
+    if (arg1 && arg1 > 1) {
+        return options.fn(this);
+    }
+    else {
+        return options.inverse(this);
+    }
 });
 
 Handlebars.registerHelper('unlessEquals', function(arg1, arg2, options) {
@@ -153,11 +178,27 @@ Handlebars.registerHelper('getDueMinutes', function (datetime, options) {
     }
 });
 
+Handlebars.registerHelper('getCustomModifierColor', function (key, options) {
+    if (customModifierColors && customModifierColors[key]) {
+        return `<span style="color:${customModifierColors[key]};">${key}</span>`;
+    }
+    else {
+        return key;
+    }
+});
+
 var templates = {};
 
 window.addEventListener('message', function(event) {
     var command = event.data.command;
     switch (command) {
+        case 'loadCustomModifierColors':
+            loadCustomModifierColors(() => {
+                event.source.postMessage({
+                    command: 'customModifierColorsLoaded',
+                }, event.origin);
+            });
+            break;
         case 'compileTemplates':
             var srcTemplates = event.data.templates;
             var keys = Object.keys(srcTemplates);

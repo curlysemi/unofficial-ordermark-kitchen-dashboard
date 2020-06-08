@@ -28,6 +28,7 @@
 
         body {
             background-color: #f8f9fa !important;
+            padding-top: 55px;
         }
 
         .no-highlight {
@@ -93,6 +94,15 @@
                                 </a>
                             </li>
                             <li>
+                                <a
+                                    id="customModifiersToggle"
+                                    class="text-white"
+                                    data-toggle="collapse" href="#customModifiersEditor" role="button" aria-expanded="false" aria-controls="customModifiersEditor"
+                                    >
+                                    Custom Modifier Highlights
+                                </a>
+                            </li>
+                            <li>
                                 <a href="#" id="clearLocalStorage" class="text-white">
                                     Clear Local Storage
                                 </a>
@@ -102,9 +112,16 @@
                 </div>
                 <div class="row collapse" id="kd-completed-orders-container">
                 </div>
+                <div class="collapse" id="customModifiersEditor">
+                    <div class="form-group">
+                        <label for="customModifiers" class="text-white">Custom Modifiers</label>
+                        <textarea class="form-control" id="customModifiers" rows="3"></textarea>
+                    </div>
+                    <button id="saveCustomModifiers" type="submit" class="btn btn-primary mb-2">Save</button>
+                </div>
             </div>
         </div>
-        <div class="navbar navbar-dark bg-dark shadow-sm">
+        <div class="navbar fixed-top navbar-dark bg-dark shadow-sm">
             <div class="container d-flex justify-content-between">
                 <a href="#" class="navbar-brand d-flex align-items-center">
                     <strong>Unofficial Ordermark Kitchen Dash</strong>
@@ -144,7 +161,7 @@
                 >
                 <div class="card mb-4 text-white bg-secondary shadow-sm">
                     <div class="card-header">
-                        #{{this.index}}
+                        #{{this.did}}
                         <div class="float-right">
                             <button class="btn btn-dark restore-ticket" id="{{this.id}}-restore" data-id="{{this.id}}">
                                 <svg class="bi bi-box-arrow-down" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -176,7 +193,7 @@
                 >
                 <div class="card mb-4 shadow-sm">
                     <div class="card-header">
-                        #{{this.index}}
+                        #{{this.did}}
                         <div class="float-right">
                             <button
                                 class="btn btn-light ticket-toggle {{#isMinimizedTicket this.id}}collapsed{{/isMinimizedTicket}}"
@@ -252,18 +269,18 @@
                                                                     {{removeChooseYour this.item_name}}:
                                                                     <strong>
                                                                         {{#ifEquals this.modifiers.length 1}}
-                                                                            {{this.modifiers.0.item_name}}
+                                                                            {{{getCustomModifierColor this.modifiers.0.item_name}}}
                                                                         {{/ifEquals}}
                                                                         {{#unlessEquals this.modifiers.length 1}}
                                                                             <ul>
                                                                                 {{#each this.modifiers}}
                                                                                     <li>
-                                                                                        {{#unlessEquals this.modifiers.0.quantity 1}}
+                                                                                        {{#hasValueGreaterThanOne this.modifiers.0.quantity}}
                                                                                             <strong>
                                                                                                 {{this.modifiers.0.quantity}}x
                                                                                             </strong>
-                                                                                        {{/unlessEquals}}
-                                                                                        {{this.item_name}}
+                                                                                        {{/hasValueGreaterThanOne}}
+                                                                                        {{{getCustomModifierColor this.item_name}}}
                                                                                     </li>
                                                                                 {{/each}}
                                                                             </ul>

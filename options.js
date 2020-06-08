@@ -110,6 +110,7 @@ function getOrdersFromResponse(response, shouldAlert) {
     }
 
     for (var i = 0, o = orders[i]; i < orders.length; o = orders[++i]) {
+        o.did = `${o.meta_info.app_id.charAt(0)}${o.meta_info.order_id.slice(-2)}`;
         o.id = `${o.meta_info.app_id}_${o.meta_info.order_id}`;
         o.index = i + 1;
         for (var j = 0, m = o.menu_items[j]; j < o.menu_items.length; m = o.menu_items[++j]) {
@@ -121,7 +122,7 @@ function getOrdersFromResponse(response, shouldAlert) {
 }
 
 function loadOrders(callback) {
-    fetch('https://dashboard.ordermark.com/api/orderV2/dashboard?h=24&a=0,1,2')
+    fetch('https://dashboard.ordermark.com/api/orderV2/dashboard?h=10&a=0,1,2')
         .then(function(response) {
             if (response.status !== 200) {
                 alert("You need to sign into Ordermark!");
@@ -178,6 +179,12 @@ window.addEventListener('message', function (event) {
     var command = event.data.command;
     switch (command) {
         case 'compiledTemplates':
+            var message = {
+                command: 'loadCustomModifierColors'
+            };
+            rendererFrame.contentWindow.postMessage(message, '*');
+            break;
+        case 'customModifierColorsLoaded':
             pageload();
             break;
         case 'finalStepsCompleted':
@@ -187,7 +194,6 @@ window.addEventListener('message', function (event) {
             templates = {};
             templates[orderTemplateName] = document.getElementById('kd-order-template').innerHTML;
             templates[completedOrderTemplateName] = document.getElementById('kd-completed-order-template').innerHTML;
-
             var message = {
                 command: 'compileTemplates',
                 templates: templates
@@ -212,8 +218,25 @@ function render(target, templateName, object) {
 }
 
 function pageload() {
-    startRenderCycle();
-    setInterval(startRenderCycle, 60000);
+    chrome.cookies.get({
+        url: 'https://uomkdd.ordermark.com/', name: 'settings'
+    }, (cookie) => {
+        if (cookie === null) {
+            chrome.cookies.set({
+                url: "https://uomkdd.ordermark.com/",
+                name: "settings",
+                expirationDate: 9007199254740991,
+                value: '{"No Cheese": "#ff0000"}'
+              }, () => {
+                startRenderCycle();
+                setInterval(startRenderCycle, 60000);
+            });
+        }
+        else {
+            startRenderCycle();
+            setInterval(startRenderCycle, 60000);
+        }
+    });
 }
 
 function startRenderCycle() {
@@ -221,15 +244,14 @@ function startRenderCycle() {
         loadedOrders = o;
         $('#loadingIndicator').collapse('hide');
         var message = {
-            command: 'finalStepsBeforeRendering',
-            templates: templates
+            command: 'finalStepsBeforeRendering'
         };
         rendererFrame.contentWindow.postMessage(message, '*');
     });
 }
 
 function finishRenderCycle() {
-    render('kd-completed-orders-container', completedOrderTemplateName, { orders: loadedOrders });
+    render('kd-completed-orders-container', completedOrderTemplateName, { orders: loadedOrders.reverse() });
     render('kd-orders-container', orderTemplateName, { orders: loadedOrders });
 }
 
@@ -313,3 +335,44 @@ $('#closeAllTickets').click(function () {
         this.click();
     });
 })
+
+$('#customModifiersToggle').click(function () {
+    var $input = $('#customModifiers');
+    if ($input.length) {
+        chrome.cookies.get({
+            url: 'https://uomkdd.ordermark.com/', name: 'settings'
+        }, (cookie) => {
+            try {
+                var data = JSON.parse(cookie.value);
+                $input.val(JSON.stringify(data, null, 4));
+            }
+            catch (error) {
+                $input.val('Error loading settings!');
+            }
+        });
+    }
+});
+
+$('#saveCustomModifiers').click(function () {
+    var $input = $('#customModifiers');
+    if ($input.length) {
+        var data = $input.val();
+        if (data) {
+            try {
+                var jData = JSON.parse(data);
+                chrome.cookies.set({
+                    url: "https://uomkdd.ordermark.com/",
+                    name: "settings",
+                    expirationDate: 9007199254740991,
+                    value: JSON.stringify(jData)
+                }, () => {
+                    window.location.reload(true);
+                });
+            }
+            catch (error) {
+                alert('There is an error with the JSON for the custom modifier text highlighting!')
+            }
+        }
+        
+    }
+});

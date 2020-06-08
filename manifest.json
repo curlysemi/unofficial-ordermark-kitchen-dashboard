@@ -6,7 +6,8 @@
   "permissions": [
     "activeTab",
     "storage",
-    "https://*.ordermark.com/"
+    "https://*.ordermark.com/",
+    "cookies"
   ],
 
   "options_page": "options.html",
